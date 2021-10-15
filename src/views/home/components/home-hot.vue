@@ -27,7 +27,6 @@ export default {
   components: { HomePanel, HomeSkeleton },
   setup () {
     const { target, result } = useLazyData(findHot)
-    console.log(13213, result)
     return { target, result }
   }
 }

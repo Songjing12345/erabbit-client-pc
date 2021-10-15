@@ -74,7 +74,6 @@ export default {
       // newVal && getSubList()
       if (newVal && `category/${newVal}` === route.path) getSubList()
     }, { immediate: true })
-    console.log(topCategory, 1211111111)
     return { sliders, topCategory, subList }
   }
 }
