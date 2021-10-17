@@ -61,11 +61,13 @@ export default {
           // 存储用户信息
           const { id, account, nickname, avatar, mobile, token } = data.result
           store.commit('user/setUser', { id, account, nickname, avatar, mobile, token })
-          // 跳转页面
-          store.commit('user/setRedirectUrl', route.query.redirectUrl)
-          router.push(store.state.user.redirectUrl)
-          // 提示
-          Message({ type: 'success', text: 'QQ登录成功' })
+          store.dispatch('cart/mergeCart').then(() => {
+            // 跳转页面
+            store.commit('user/setRedirectUrl', route.query.redirectUrl)
+            router.push(store.state.user.redirectUrl)
+            // 提示
+            Message({ type: 'success', text: 'QQ登录成功' })
+          })
         }).catch(e => {
           // 登录失败
           isBind.value = false

@@ -4,6 +4,7 @@
 // vue3.0插件写法要素：导出一个对象，有install函数，默认传入了app应用实例，app基础之上扩展
 
 import Message from './Message'
+import confirm from './confirm'
 
 import defaultImg from '@/assets/images/200.png'
 // import XtxSkeleton from './xtx-skeleton.vue'
@@ -40,6 +41,7 @@ export default {
 
     // 如果你想挂载全局的属性，能够通过组件实例调用的属性   this.$message
     app.config.globalProperties.$message = Message// 原型函数
+    app.config.globalProperties.$confirm = confirm// 原型函数
   }
 }
 // 指令
