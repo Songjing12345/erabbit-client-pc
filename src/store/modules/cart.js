@@ -1,4 +1,12 @@
-import { getNewCartGoods, mergeLocalCart } from '@/api/cart'
+import {
+  getNewCartGoods,
+  mergeLocalCart,
+  findCartList,
+  insertCart,
+  deleteCart,
+  updateCart,
+  checkAllCart
+} from '@/api/cart'
 // 购物车模块
 export default {
   namespaced: true,
@@ -102,6 +110,19 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 已登录
+          // 1. 获取原先商品的数量
+          const oldGoods = ctx.state.list.find(item => item.skuId === oldSkuId)
+          // 2. 删除原先商品
+          deleteCart([oldGoods.skuId]).then(() => {
+            // 3. 获取修改的skuId 和 原先商品数量 做一个加入购物车操作
+            return insertCart({ skuId: newSku.skuId, count: oldGoods.count })
+            // 4. 更新列表
+          }).then(() => {
+            return findCartList()
+          }).then(data => {
+            ctx.commit('setCart', data.result)
+            resolve()
+          })
         } else {
           // 未登录
           // 1. 找出旧的商品信息
@@ -122,7 +143,13 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 已登录
-
+          const ids = ctx.getters[isClear ? 'invalidList' : 'selectedList'].map(item => item.skuId)
+          deleteCart(ids).then(() => {
+            return findCartList()
+          }).then(data => {
+            ctx.commit('setCart', data.result)
+            resolve()
+          })
         } else {
           // 未登录
           // 1. 获取选中商品列表，进行遍历调用deleteCart mutataions函数
@@ -138,7 +165,13 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 已登录
-
+          const ids = ctx.getters.validList.map(item => item.skuId)
+          checkAllCart({ selected, ids }).then(() => {
+            return findCartList()
+          }).then(data => {
+            ctx.commit('setCart', data.result)
+            resolve()
+          })
         } else {
           // 未登录
           // 1. 获取有效的商品列表，遍历的去调用修改mutations即可
@@ -154,7 +187,12 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 已登录
-
+          updateCart(payload).then(() => {
+            return findCartList()
+          }).then(data => {
+            ctx.commit('setCart', data.result)
+            resolve()
+          })
         } else {
           // 未登录
           ctx.commit('updateCart', payload)
@@ -167,7 +205,12 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 已登录
-
+          deleteCart([payload]).then(() => {
+            return findCartList()
+          }).then(data => {
+            ctx.commit('setCart', data.result)
+            resolve()
+          })
         } else {
           // 未登录
           // 单条删除 payload 现在  就是skuId
@@ -181,7 +224,12 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 已登录
-
+          insertCart({ skuId: payload.skuId, count: payload.count }).then(() => {
+            return findCartList()
+          }).then(data => {
+            ctx.commit('setCart', data.result)
+            resolve()
+          })
         } else {
           // 未登录
           ctx.commit('insertCart', payload)
@@ -194,6 +242,10 @@ export default {
       return new Promise((resolve, reject) => {
         if (ctx.rootState.user.profile.token) {
           // 已登录
+          findCartList().then(data => {
+            ctx.commit('setCart', data.result)
+          })
+          resolve()
         } else {
           // 未登录
           // 同时发送请求（有几个商品发几个请求）等所有请求成功，一并去修改本地数据。
