@@ -1,5 +1,6 @@
 // 用户模块
 export default {
+  // 带命名空间
   namespaced: true,
   state () {
     return {

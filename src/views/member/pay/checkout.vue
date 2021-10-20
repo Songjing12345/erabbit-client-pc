@@ -78,26 +78,41 @@
 </template>
 <script>
 import CheckoutAddress from './components/checkout-address'
-import { findCheckoutInfo, createOrder } from '@/api/order'
+import { findCheckoutInfo, createOrder, findOrderRepurchase } from '@/api/order'
 import { ref, reactive } from 'vue'
 import Message from '@/components/library/Message'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 export default {
   name: 'XtxPayCheckoutPage',
   components: { CheckoutAddress },
   setup () {
     // 获取订单数据
     const checkoutInfo = ref(null)
-    findCheckoutInfo().then(data => {
-      console.log(data)
-      checkoutInfo.value = data.result
-      requestParams.goods = data.result.goods.map(item => {
-        return {
-          skuId: item.skuId,
-          count: item.count
-        }
+    const route = useRoute()
+    if (route.query.orderId) {
+      // 再次购买
+      findOrderRepurchase(route.query.orderId).then(data => {
+        checkoutInfo.value = data.result
+        requestParams.goods = data.result.goods.map(item => {
+          return {
+            skuId: item.skuId,
+            count: item.count
+          }
+        })
       })
-    })
+    } else {
+      // 购物车购买
+      findCheckoutInfo().then(data => {
+        // console.log(data)
+        checkoutInfo.value = data.result
+        requestParams.goods = data.result.goods.map(item => {
+          return {
+            skuId: item.skuId,
+            count: item.count
+          }
+        })
+      })
+    }
     // 需要提交的字段
     const requestParams = reactive({
       // 收货地址，切换收货地址或者组件默认的时候设置
@@ -121,7 +136,7 @@ export default {
         return Message({ text: '亲，请选择收货地址' })
       }
       createOrder(requestParams).then(data => {
-        console.log(data)
+        // console.log(data)
         Message({ type: 'success', text: '提交订单成功' })
         // 跳转支付页面
         router.push(`/member/pay?orderId=${data.result.id}`)

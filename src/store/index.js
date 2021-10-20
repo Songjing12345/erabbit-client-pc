@@ -15,7 +15,7 @@ export default createStore({
   },
   // 配置插件
   plugins: [
-    // 默认存储在localStorage中
+    // 默认存储在localStorage中， 配置持久化
     createPersistedState({
       // 本地存储名字
       key: 'erabbit-client-pc-store',

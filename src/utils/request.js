@@ -42,12 +42,12 @@ instance.interceptors.response.use((res) => res.data, err => {
 
 // 请求工具函数
 export default (url, method, submitData) => {
-  // 负责发请求
+  // 负责发请求：请求地址，请求方式，提交的数据
   return instance({
     url,
     method,
     // 1、如果是get请求，需要使用params来传递submitData
-    // 1、如果不是get请求，需要使用data来传递submitData
+    // 1、如果不是get请求，需要使用data来传递submitData，请求体传参
     // []设置成一个动态的key，写JS表达式，需要注意把method统一转换为小写再来判断
     [method.toLowerCase() === 'get' ? 'params' : 'data']: submitData
   })

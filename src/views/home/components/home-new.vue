@@ -7,7 +7,7 @@
         <Transition name="fade">
           <ul v-if="result.length" ref="pannel" class="goods-list">
             <li v-for="item in result" :key="item.id">
-              <RouterLink to="/">
+              <RouterLink :to="`/product/${item.id}`">
                 <img :src="item.picture" alt="">
                 <p class="name ellipsis">{{item.name}}</p>
                 <p class="price">&yen;{{item.price}}</p>
